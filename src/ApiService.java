@@ -15,17 +15,19 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ApiService {
+    private final LoggingService loggingService;
     private Properties apiProps;
     private String apiCallUrl;
     private String apiAuthKey;
 
     private SavingService savingService;
-
     private boolean status = false;
 
     public ApiService() {
+        loggingService = new LoggingService();
+
         if(loadApiAuthKey()) {
-            Path saveOptFile = PropertyPath.get(Props.APP);
+            Path saveOptFile = CommonMethod.getPropertiesPath(Props.APP);
             try(
                 FileReader reader = new FileReader(saveOptFile.toFile());
             ) {
@@ -43,17 +45,20 @@ public class ApiService {
                         break;
                 }
                 status = true;
+                loggingService.writeLog("api auth key load completed.");
 
             } catch(Exception e) {
+                status = false;
+                loggingService.writeErr("Load api auth key error. " + e.getMessage());
                 e.printStackTrace();
             }
         } else {
-            System.out.println("api.auth.key is null. entered api.auth.key string to api.properties file.");
+            loggingService.writeErr("api.auth.key is null. entered api.auth.key string to api.properties file.");
         }
     }
 
     private boolean loadApiAuthKey() {
-        Path propFile = PropertyPath.get(Props.API);
+        Path propFile = CommonMethod.getPropertiesPath(Props.API);
         try(
             FileReader reader = new FileReader(propFile.toFile());
         ) {
@@ -130,10 +135,12 @@ public class ApiService {
                 savingService.save(params);
 
             } catch(Exception e) {
+                loggingService.writeErr("ApiService.callAndSave() method error. " + e.getMessage());
                 e.printStackTrace();
             }
 
         } catch(Exception e) {
+            loggingService.writeErr("ApiService.callAndSave() method error. " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -1,5 +1,5 @@
 -- mariaDB 기준
---DROP TABLE exchange_rate;
+-- DROP TABLE exchange_rate;
 
 CREATE TABLE exchange_rate (
 	dt DATE NOT NULL,

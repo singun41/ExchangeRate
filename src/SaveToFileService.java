@@ -3,23 +3,22 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
 public class SaveToFileService implements SavingService {
+    private final LoggingService loggingService;
     private String filepath;
     private String filename;
-    private LocalDateTime now;
-    private String dateStr;
 
     public SaveToFileService() {
-        now = LocalDateTime.now();
-        dateStr = now.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        loggingService = new LoggingService();
     }
 
     public void save(List<Map<String, Object>> params) {
+        String now = CommonMethod.getCurrentDatetimeString();
+        String dateStr = CommonMethod.getCurrentDateString();
+
         filepath = new StringBuilder(System.getProperty("user.dir")).append("/currencies/").toString();
         filename = new StringBuilder(filepath).append(dateStr).append(".txt").toString();
 
@@ -39,7 +38,7 @@ public class SaveToFileService implements SavingService {
                 e.get("ten_dd_efee_r").toString(),
                 e.get("kftc_deal_bas_r").toString(),
                 e.get("kftc_bkpr").toString(),
-                now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                now
             };
 
             writingData.append(MessageFormat.format(data, args)).append(System.lineSeparator());
@@ -57,8 +56,10 @@ public class SaveToFileService implements SavingService {
             }
 
             Files.write(file, writingData.toString().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
-            
+            loggingService.writeLog("File writing is completed.");
+
         } catch(Exception ex) {
+            loggingService.writeErr("File writing error. " + ex.getMessage());
             ex.printStackTrace();
         }
     }
