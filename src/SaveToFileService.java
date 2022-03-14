@@ -11,8 +11,8 @@ public class SaveToFileService implements SavingService {
     private String filepath;
     private String filename;
 
-    public SaveToFileService() {
-        loggingService = new LoggingService();
+    public SaveToFileService(LoggingService loggingService) {
+        this.loggingService = loggingService;
     }
 
     public void save(List<Map<String, Object>> params) {

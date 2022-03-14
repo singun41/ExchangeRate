@@ -35,14 +35,9 @@ public class ApiService {
                 saveProps.load(reader);
     
                 switch(SaveOption.valueOf(saveProps.getProperty("save.option").toUpperCase())) {
-                    case DB:
-                        savingService = new SaveToDbService();
-                        break;
-                        
+                    case DB: savingService = new SaveToDbService(loggingService); break;
                     case FILE:
-                    default:
-                        savingService = new SaveToFileService();
-                        break;
+                    default: savingService = new SaveToFileService(loggingService); break;
                 }
                 status = true;
                 loggingService.writeLog("api auth key load completed.");
@@ -121,13 +116,10 @@ public class ApiService {
                     
                     int resultCode = Integer.parseInt(jsonObj.get("result").toString());
                     switch(resultCode) {
-                        case 1:
-                            params.add(jsonObj.toMap());
-                            break;
-
-                        case 2: System.out.println("DATA코드 오류. origin data: " + jsonObj.toString()); break;
-                        case 3: System.out.println("인증코드 오류. origin data: " + jsonObj.toString()); break;
-                        case 4: System.out.println("일일제한횟수 마감. origin data: " + jsonObj.toString()); break;
+                        case 1: params.add(jsonObj.toMap()); break;
+                        case 2: loggingService.writeLog("DATA코드 오류. origin data: " + jsonObj.toString()); break;
+                        case 3: loggingService.writeLog("인증코드 오류. origin data: " + jsonObj.toString()); break;
+                        case 4: loggingService.writeLog("일일제한횟수 마감. origin data: " + jsonObj.toString()); break;
                         default: break;
                     }
                 }

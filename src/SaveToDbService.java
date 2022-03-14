@@ -15,8 +15,8 @@ public class SaveToDbService implements SavingService {
     private String username;
     private String password;
 
-    public SaveToDbService() {
-        loggingService = new LoggingService();
+    public SaveToDbService(LoggingService loggingService) {
+        this.loggingService = loggingService;
         loadDbConnectionInfo();
     }
 
